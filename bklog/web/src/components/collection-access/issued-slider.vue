@@ -92,7 +92,7 @@
                     ></div>
                     <i
                       v-else-if="tabItem.type === 'running'"
-                      style=" margin: 4px 4px 0 0;color: #3a84ff"
+                      style="margin: 4px 4px 0 0; color: #3a84ff"
                       class="bk-icon icon-refresh"
                     >
                     </i>
@@ -668,8 +668,9 @@
         });
       },
       requestDetail(row) {
+        if (!row) return;
         this.detail.loading = true;
-        this.currentActiveRow = row.ip;
+        this.currentActiveRow = row?.ip ?? '';
         this.currentRow = row;
         this.$http
           .request('collect/executDetails', {
@@ -677,8 +678,8 @@
               collector_id: this.curCollect.collector_config_id,
             },
             query: {
-              instance_id: row.instance_id,
-              task_id: row.task_id,
+              instance_id: row.instance_id ?? '',
+              task_id: row.task_id ?? '',
             },
           })
           .then(res => {

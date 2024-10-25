@@ -34,27 +34,23 @@
           :key="item.id"
           @click="handleClickNav(item.id)"
         >
-          <span
-            v-if="item.id !== 'all'"
-            v-bkloading="{
-              isLoading: isHaveRunning(item),
-              opacity: 1,
-              zIndex: 10,
-              theme: 'primary',
-              mode: 'spin',
-              size: 'small',
-            }"
-            :class="[
-              item.id !== 'running' && 'circle nav-icon',
-              isHaveRunning(item) && 'rotate-icon',
-              colorClass[item.id],
-            ]"
-          ></span>
-          <span
-            v-if="isHaveRunning(item)"
-            class="running-circle"
-          ></span>
-          <span>{{ statusNameList[item.id] }} {{ item.listNum }}</span>
+          <div
+            v-if="item.id === 'failed'"
+            class="ip-status-cicle"
+            style="margin-top: 6px"
+          ></div>
+          <div
+            v-else-if="item.id === 'success'"
+            class="ip-status-cicle"
+            style="margin-top: 6px; border: 1px solid #34d97b"
+          ></div>
+          <i
+            v-else-if="item.id === 'running'"
+            style="margin: 4px 4px 0 0; color: #3a84ff"
+            class="bk-icon icon-refresh"
+          >
+          </i>
+          <div>{{ `${statusNameList[item.id]}(${item.listNum})` }}</div>
         </div>
       </div>
       <bk-button @click.stop="issuedRetry()">
@@ -90,18 +86,27 @@
             ></bk-table-column>
             <bk-table-column :label="$t('状态')">
               <template #default="{ row }">
-                <div :class="row.status === 'running' ? 'rotate-div' : ''">
-                  <span
-                    v-bkloading="{
-                      isLoading: row.status === 'running',
-                      opacity: 1,
-                      zIndex: 10,
-                      theme: 'primary',
-                      mode: 'spin',
-                      size: 'small',
-                    }"
-                    :class="['circle', row.status === 'running' ? 'rotate-icon' : 'nav-icon', colorClass[row.status]]"
-                  ></span>
+                <div style="display: flex">
+                  <div
+                    class="ip-status-cicle"
+                    v-if="row.status === 'failed'"
+                  ></div>
+                  <div
+                    class="ip-status-cicle"
+                    style="border: 1px solid #34d97b"
+                    v-if="row.status === 'success'"
+                  ></div>
+                  <i
+                    v-if="row.status !== 'success' && row.status !== 'failed'"
+                    style="
+                      display: inline-block;
+                      margin: 4px 5px 0 0;
+                      color: #3a84ff;
+                      animation: button-icon-loading 1s linear infinite;
+                    "
+                    class="bk-icon icon-refresh"
+                  >
+                  </i>
                   <span>{{ statusNameList[row.status] }}</span>
                 </div>
               </template>
@@ -168,7 +173,7 @@
         statusNameList: {
           // 状态中文名
           all: this.$t('全部'),
-          success: this.$t('正常'),
+          success: this.$t('成功'),
           failed: this.$t('失败'),
           running: this.$t('执行中'),
         },
@@ -303,6 +308,7 @@
 </script>
 <style lang="scss">
   @import '@/scss/mixins/flex.scss';
+  @import '@/scss/conf';
 
   .container-status-container {
     .nav-section {
@@ -321,6 +327,7 @@
 
         .nav-btn {
           position: relative;
+          display: flex;
           padding: 4px 15px;
           color: #63656e;
           border-radius: 4px;
@@ -453,6 +460,14 @@
       .show {
         height: auto;
       }
+    }
+
+    .ip-status-cicle {
+      width: 10px;
+      height: 10px;
+      margin: 4px 5px 0 0;
+      border: 1px solid $failColor;
+      border-radius: 50%;
     }
   }
 </style>
